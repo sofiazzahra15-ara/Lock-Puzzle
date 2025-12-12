@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gembok Interaktif — 3 Digit (Siap Upload)</title>
+  <meta name="description" content="Puzzle gembok 3 digit, pastel style. Siap di-embed di Genially via iframe." />
+  <style>
+    :root{
+      --bg: #f7f9fc;
+      --card:#ffffff;
+      --accent:#7aa2ff;
+      --accent-2:#aab9ff;
+      --muted:#7c8799;
+      --ok:#33c37d;
+      --err:#ff6b6b;
+      --glass: rgba(255,255,255,0.6);
+    }
+    *{box-sizing:border-box;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#f0f6ff 0%,var(--bg) 100%);display:grid;place-items:center;padding:24px}
+    .card{width:380px;background:var(--card);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(30,50,90,0.06);position:relative;overflow:hidden}
+    h1{font-size:18px;margin:0 0 6px;color:#24324a}
+    p.sub{margin:0 0 14px;color:var(--muted);font-size:13px}
+    .top{display:flex;gap:14px;align-items:center}
+    /* lock */
+    .lock-wrap{width:140px;height:160px;position:relative;flex:0 0 140px}
+    .shackle{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:78px;height:78px;border-radius:48px 48px 0 0;border:10px solid #e6eefc;border-bottom:0;background:transparent;transition:transform 700ms cubic-bezier(.22,.9,.28,1),border-color 300ms, top 700ms}
+    .body{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:120px;height:86px;border-radius:12px;background:linear-gradient(180deg,#fff 0%,#f3f7ff 100%);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -8px 20px rgba(8,30,80,0.04)}
+    .keyhole{width:20px;height:28px;border-radius:6px;background:#2d3a6a;position:relative}
+    .lock.open .shackle{transform:translateX(-50%) translateY(-48px) rotate(-22deg);border-color:var(--accent)}
+    .lock.open .body{background:linear-gradient(180deg,#fff 0%,#eaf2ff 100%)}
+    /* display & keypad */
+    .panel{flex:1}
+    .display{height:46px;background:#f1f5fb;border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between}
+    .digits{font-size:20px;letter-spacing:8px;color:#23314a;font-weight:700}
+    .status{font-size:12px;color:var(--muted)}
+    .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+    .btn{height:48px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(180deg,#fff,#f8fbff);border:1px solid #e9f0ff;cursor:pointer;user-select:none;font-weight:700;color:#21314a}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:white;border:0;box-shadow:0 6px 18px rgba(122,162,255,0.18)}
+    .controls{display:flex;gap:8px;margin-top:12px}
+    .small{height:42px;padding:0 12px;border-radius:10px;border:1px solid #eef4ff;background:#fff}
+    .muted{font-size:12px;color:var(--muted);margin-top:10px}
+    /* confetti canvas */
+    canvas.confetti{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:9}
+    /* footer */
+    .meta{font-size:12px;color:var(--muted);margin-top:10px}
+    .danger{color:var(--err);font-weight:700}
+    @media (max-width:420px){.card{width:92vw}}
+  </style>
+</head>
+<body>
+  <div class="card" role="application" aria-label="Permainan Gembok Interaktif">
+    <canvas class="confetti" id="confettiCanvas"></canvas>
+
+    <div class="top" style="align-items:flex-start">
+      <div class="lock-wrap">
+        <div class="lock" id="lockElm" aria-hidden="true">
+          <div class="shackle" id="shackle"></div>
+          <div class="body">
+            <div class="keyhole" id="keyhole" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h1>Gembok Interaktif</h1>
+        <p class="sub">Masukkan kombinasi <strong>3 angka</strong>. Klik tombol atau pakai keyboard. (Enter = Kirim)</p>
+
+        <div class="display" aria-live="polite">
+          <div class="digits" id="display">– – –</div>
+          <div class="status" id="status">Siap</div>
+        </div>
+
+        <div class="pad" role="group" aria-label="keypad" id="pad">
+          <!-- buttons injected by JS -->
+        </div>
+
+        <div class="controls">
+          <button class="small" id="btnClear" title="Hapus">Hapus</button>
+          <button class="small" id="btnReset" title="Reset">Reset</button>
+          <button class="small primary" id="btnEnter" title="Masuk">Masuk</button>
+        </div>
+
+        <div class="muted">
+          Percobaan: <span id="attempts">0</span> / <span id="maxAttempts">6</span>
+        </div>
+
+        <div class="meta" style="margin-top:8px">
+          Keterangan: kode bisa diubah di variabel <code>SECRET</code> pada kode JS di bawah.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*******************************
+     * CONFIG
+     * - ubah SECRET di sini
+     * - ubah MAX_ATTEMPTS kalau mau
+     *******************************/
+    const SECRET = '123'; // <-- ubah kombinasi rahasia di sini (string of 3 digits)
+    const MAX_ATTEMPTS = 6; // <-- batas percobaan
+
+    /*******************************
+     * STATE
+     *******************************/
+    let attempt = '';
+    let tries = 0;
+    let lockedOut = false;
+
+    /*******************************
+     * ELEMENTS
+     *******************************/
+    const lockElm = document.getElementById('lockElm');
+    const display = document.getElementById('display');
+    const status = document.getElementById('status');
+    const pad = document.getElementById('pad');
+    const confettiCanvas = document.getElementById('confettiCanvas');
+    const attemptsEl = document.getElementById('attempts');
+    const maxAttemptsEl = document.getElementById('maxAttempts');
+    maxAttemptsEl.textContent = MAX_ATTEMPTS;
+
+    /*******************************
+     * Small audio helpers (WebAudio)
+     *******************************/
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = AudioCtx ? new AudioCtx() : null;
+
+    function clickSound(){
+      if(!ctx) return;
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'square';
+      o.frequency.value = 900;
+      g.gain.value = 0.02;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+      o.stop(ctx.currentTime + 0.09);
+    }
+
+    function successChime(){
+      if(!ctx) return;
+      const now = ctx.currentTime;
+      const o1 = ctx.createOscillator();
+      const o2 = ctx.createOscillator();
+      const g = ctx.createGain();
+      o1.type = 'sine'; o2.type='sine';
+      o1.frequency.value = 660; o2.frequency.value = 990;
+      g.gain.value = 0.02;
+      o1.connect(g); o2.connect(g); g.connect(ctx.destination);
+      o1.start(now); o2.start(now);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+      o1.stop(now + 0.7); o2.stop(now + 0.7);
+    }
+
+    /*******************************
+     * Confetti (simple canvas)
+     *******************************/
+    const confettiCtx = confettiCanvas.getContext('2d');
+    let confettiPieces = [];
+
+    function resizeCanvas(){
+      confettiCanvas.width = confettiCanvas.clientWidth * devicePixelRatio;
+      confettiCanvas.height = confettiCanvas.clientHeight * devicePixelRatio;
+      confettiCtx.scale(devicePixelRatio, devicePixelRatio);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function spawnConfetti(){
+      confettiPieces = [];
+      const colors = ['#ff8da1','#ffd57e','#a7f0d1','#7aa2ff','#d6a3ff'];
+      for(let i=0;i<40;i++){
+        confettiPieces.push({
+          x: Math.random()*confettiCanvas.clientWidth,
+          y: -10 - Math.random()*80,
+          w: 6 + Math.random()*10,
+          h: 8 + Math.random()*10,
+          rot: Math.random()*360,
+          speed: 1 + Math.random()*3,
+          color: colors[i % colors.length],
+          spin: (Math.random()*6-3)
+        });
+      }
+      animateConfetti();
+    }
+
+    let confettiAnim;
+    function animateConfetti(){
+      cancelAnimationFrame(confettiAnim);
+      function frame(){
+        confettiCtx.clearRect(0,0,confettiCanvas.clientWidth,confettiCanvas.clientHeight);
+        for(const p of confettiPieces){
+          p.y += p.speed;
+          p.rot += p.spin;
+          confettiCtx.save();
+          confettiCtx.translate(p.x, p.y);
+          confettiCtx.rotate(p.rot * Math.PI/180);
+          confettiCtx.fillStyle = p.color;
+          confettiCtx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          confettiCtx.restore();
+        }
+        confettiPieces = confettiPieces.filter(p => p.y < confettiCanvas.clientHeight + 20);
+        if(confettiPieces.length>0){
+          confettiAnim = requestAnimationFrame(frame);
+        } else {
+          cancelAnimationFrame(confettiAnim);
+        }
+      }
+      confettiAnim = requestAnimationFrame(frame);
+    }
+
+    /*******************************
+     * Build keypad
+     *******************************/
+    const keys = ['1','2','3','4','5','6','7','8','9','0'];
+    keys.forEach(k=>{
+      const b = document.createElement('button');
+      b.className='btn';
+      b.textContent = k;
+      b.setAttribute('aria-label','angka ' + k);
+      b.addEventListener('click', ()=> pressKey(k));
+      pad.appendChild(b);
+    });
+
+    /*******************************
+     * Controls
+     *******************************/
+    document.getElementById('btnClear').addEventListener('click', clearAttempt);
+    document.getElementById('btnReset').addEventListener('click', resetGame);
+    document.getElementById('btnEnter').addEventListener('click', enterAttempt);
+
+    window.addEventListener('keydown', (e)=>{
+      if(lockedOut) return;
+      if(e.key === 'Enter'){ enterAttempt(); return; }
+      if(e.key === 'Backspace'){ clearAttempt(); return; }
+      if(/^[0-9]$/.test(e.key)) pressKey(e.key);
+    });
+
+    /*******************************
+     * UI helpers
+     *******************************/
+    function updateDisplay(){
+      display.textContent = attempt.split('').concat(Array(Math.max(0,3-attempt.length)).fill('–')).join(' ');
+      attemptsEl.textContent = tries;
+    }
+
+    function setStatus(text, type){
+      status.textContent = text;
+      if(type === 'ok') status.style.color = 'var(--ok)';
+      else if(type === 'err') status.style.color = 'var(--err)';
+      else status.style.color = 'var(--muted)';
+    }
+
+    /*******************************
+     * Core logic
+     *******************************/
+    function pressKey(digit){
+      if(lockedOut) return;
+      if(attempt.length >= 3) return;
+      attempt += String(digit);
+      updateDisplay();
+      setStatus('Memasukkan...');
+      clickSound();
+    }
+
+    function clearAttempt(){
+      if(lockedOut) return;
+      attempt = '';
+      updateDisplay();
+      setStatus('Dihapus');
+      setTimeout(()=>setStatus('Siap'),600);
+    }
+
+    function enterAttempt(){
+      if(lockedOut) return;
+      if(attempt.length !== 3){
+        setStatus('Masukkan 3 angka dulu!', 'err');
+        return;
+      }
+      tries++;
+      attemptsEl.textContent = tries;
+      if(attempt === SECRET){
+        // success
+        setStatus('Terbuka! 🎉', 'ok');
+        lockElm.classList.add('open');
+        successChime();
+        spawnConfetti();
+        // disable further input
+        lockedOut = true;
+      } else {
+        setStatus('Salah! Coba lagi.', 'err');
+        // shake effect on display
+        display.animate([{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:260});
+        attempt = '';
+        updateDisplay();
+        clickSound();
+        if(tries >= MAX_ATTEMPTS){
+          lockedOut = true;
+          setStatus('Terblokir. Percobaan habis.', 'err');
+          // small red flash on lock
+          lockElm.animate([{boxShadow:'0 10px 30px rgba(255,80,80,0.06)'},{boxShadow:'0 0 0 rgba(0,0,0,0)'}],{duration:900});
+        }
+      }
+    }
+
+    function resetGame(){
+      attempt = '';
+      tries = 0;
+      lockedOut = false;
+      lockElm.classList.remove('open');
+      updateDisplay();
+      setStatus('Siap');
+    }
+
+    // init
+    updateDisplay();
+    setStatus('Siap');
+  </script>
+</body>
+</html>

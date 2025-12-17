@@ -5,155 +5,60 @@
 <title>COC Lock Puzzle</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <style>
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #0f3d2e;
-  color: #f5f7f6;
-  overflow-x: hidden;
-}
-.page { display: none; min-height: 100vh; padding: 30px; position: relative; }
-.page.active { display: block; }
-
-.page::before {
-  content: "🔐";
-  position: absolute;
-  font-size: 180px;
-  opacity: 0.12;
-  right: 20px;
-  bottom: 20px;
-  pointer-events: none;
-}
-
-h1 { text-align: center; margin-bottom: 10px; }
-.timer {
-  text-align: center;
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-.lock-box {
-  border: 2px solid #e6e6e6;
-  padding: 15px;
-  background: #ffffff;
-  text-align: center;
-  color: #111;
-}
-.lock-name { font-weight: bold; margin-bottom: 5px; }
-.lock-icon { font-size: 70px; margin: 10px 0; }
-.lock-open { font-size: 110px; animation: pop 0.6s ease; }
-@keyframes pop {
-  0% { transform: scale(0.5); }
-  100% { transform: scale(1); }
-}
-
-.clue {
-  text-align: left;
-  font-size: 18px;
-  border: 1px solid #d0d7d4;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.keypad input {
-  width: 42px;
-  height: 42px;
-  text-align: center;
-  font-size: 18px;
-  margin: 3px;
-}
-.keypad button {
-  margin-top: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-}
-
-.tries { font-size: 14px; margin-bottom: 6px; }
-
-.nav { text-align: center; margin-top: 20px; }
-.nav button { padding: 8px 16px; margin: 5px; font-size: 14px; }
-
-/* Confetti festival */
-@keyframes confettiFall {
-  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-}
-.confetti {
-  position: fixed;
-  top: -20px;
-  font-size: 24px;
-  animation: confettiFall 3s linear forwards;
-  pointer-events: none;
-}
+body{margin:0;font-family:'Segoe UI',Arial,sans-serif;background:#0f3d2e;color:#f5f7f6;overflow-x:hidden}
+.page{display:none;min-height:100vh;padding:30px;position:relative}
+.page.active{display:block}
+.page::before{content:"🔐";position:absolute;font-size:180px;opacity:.12;right:20px;bottom:20px;pointer-events:none}
+h1{text-align:center;margin-bottom:10px}
+.timer{text-align:center;font-size:26px;font-weight:bold;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.lock-box{border:2px solid #e6e6e6;padding:15px;background:#fff;text-align:center;color:#111}
+.lock-name{font-weight:bold;margin-bottom:5px}
+.lock-icon{font-size:70px;margin:10px 0}
+.lock-open{font-size:110px;animation:pop .6s ease}
+@keyframes pop{0%{transform:scale(.5)}100%{transform:scale(1)}}
+.clue{text-align:left;font-size:18px;border:1px solid #d0d7d4;padding:10px;margin-bottom:10px}
+.keypad input{width:42px;height:42px;text-align:center;font-size:18px;margin:3px}
+.keypad button{margin-top:8px;padding:8px 16px;font-size:14px}
+.tries{font-size:14px;margin-bottom:6px}
+.nav{position:absolute;bottom:20px;left:0;right:0;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center}
+.nav .left{text-align:left;padding-left:20px}
+.nav .center{text-align:center}
+.nav .right{text-align:right;padding-right:20px}
+.nav button{padding:8px 16px;margin:5px;font-size:14px}
 </style>
 <audio id="successSound" src="success-340660.mp3" preload="auto"></audio>
 </head>
 <body>
+
 <!-- PAGE 1 -->
 <div class="page active" id="page1">
   <h1>Babak 1 – Kerja Bersama</h1>
   <div class="timer" id="timer1">05:00</div>
   <div class="grid-3">
-
     <div class="lock-box" data-code="319">
       <div class="lock-name">Seven Class</div>
       <div class="lock-icon">🔒</div>
       <div class="tries">Sisa kesempatan: <span class="try-count">3</span></div>
-      <div class="clue">
-        3 4 8 : satu angka benar dan posisinya benar<br>
-        8 5 4 : tidak ada angka yang benar<br>
-        8 9 3 : dua angka benar tetapi posisinya salah<br>
-        5 9 1 : dua angka benar tetapi posisinya salah<br>
-        1 8 4 : satu angka benar tetapi posisinya salah
-      </div>
-      <div class="keypad">
-        <input maxlength="1"><input maxlength="1"><input maxlength="1"><br>
-        <button onclick="check(this)">Cek</button>
-      </div>
+      <div class="clue">3 4 8 : satu angka benar dan posisinya benar<br>8 5 4 : tidak ada angka yang benar<br>8 9 3 : dua angka benar tetapi posisinya salah<br>5 9 1 : dua angka benar tetapi posisinya salah<br>1 8 4 : satu angka benar tetapi posisinya salah</div>
+      <div class="keypad"><input maxlength="1"><input maxlength="1"><input maxlength="1"><br><button onclick="check(this)">Cek</button></div>
     </div>
-
     <div class="lock-box" data-code="718">
       <div class="lock-name">Eight Class</div>
       <div class="lock-icon">🔒</div>
       <div class="tries">Sisa kesempatan: <span class="try-count">3</span></div>
-      <div class="clue">
-        5 4 8 : satu angka benar dan posisinya benar<br>
-        5 3 0 : tidak ada angka yang benar<br>
-        8 0 6 : satu angka benar tetapi posisinya salah<br>
-        7 1 5 : dua angka benar dan posisinya benar<br>
-        6 4 7 : satu angka benar tetapi posisinya salah
-      </div>
-      <div class="keypad">
-        <input maxlength="1"><input maxlength="1"><input maxlength="1"><br>
-        <button onclick="check(this)">Cek</button>
-      </div>
+      <div class="clue">5 4 8 : satu angka benar dan posisinya benar<br>5 3 0 : tidak ada angka yang benar<br>8 0 6 : satu angka benar tetapi posisinya salah<br>7 1 5 : dua angka benar dan posisinya benar<br>6 4 7 : satu angka benar tetapi posisinya salah</div>
+      <div class="keypad"><input maxlength="1"><input maxlength="1"><input maxlength="1"><br><button onclick="check(this)">Cek</button></div>
     </div>
-
     <div class="lock-box" data-code="394">
       <div class="lock-name">Nine Class</div>
       <div class="lock-icon">🔒</div>
       <div class="tries">Sisa kesempatan: <span class="try-count">3</span></div>
-      <div class="clue">
-        2 9 1 : satu angka benar dan posisinya benar<br>
-        5 7 8 : tidak ada angka yang benar<br>
-        2 4 5 : satu angka benar tetapi posisinya salah<br>
-        4 6 3 : dua angka benar tetapi posisinya salah<br>
-        5 6 9 : satu angka benar tetapi posisinya salah
-      </div>
-      <div class="keypad">
-        <input maxlength="1"><input maxlength="1"><input maxlength="1"><br>
-        <button onclick="check(this)">Cek</button>
-      </div>
+      <div class="clue">2 9 1 : satu angka benar dan posisinya benar<br>5 7 8 : tidak ada angka yang benar<br>2 4 5 : satu angka benar tetapi posisinya salah<br>4 6 3 : dua angka benar tetapi posisinya salah<br>5 6 9 : satu angka benar tetapi posisinya salah</div>
+      <div class="keypad"><input maxlength="1"><input maxlength="1"><input maxlength="1"><br><button onclick="check(this)">Cek</button></div>
     </div>
-
   </div>
-  <div class="nav"><button onclick="go(2)">Ke Babak Rebutan</button></div>
+  <div class="nav"><div class="left"></div><div class="center"><button onclick="startCurrentTimer()">▶ Mulai Babak</button></div><div class="right"><button onclick="go(2)">⏭ Lanjut</button></div></div>
 </div>
 
 <!-- PAGE 2 -->
@@ -163,178 +68,45 @@ h1 { text-align: center; margin-bottom: 10px; }
   <div class="lock-box" data-code="042">
     <div class="lock-icon">🔒</div>
     <div class="tries">Sisa kesempatan: <span class="try-count">3</span></div>
-    <div class="clue">
-      6 8 2 : satu angka benar dan posisinya benar<br>
-      7 3 8 : tidak ada angka yang benar<br>
-      6 1 4 : satu angka benar tetapi posisinya salah<br>
-      2 0 6 : dua angka benar tetapi posisinya salah<br>
-      7 8 0 : satu angka benar tetapi posisinya salah
-    </div>
-    <div class="keypad">
-      <input maxlength="1"><input maxlength="1"><input maxlength="1"><br>
-      <button onclick="check(this)">Cek</button>
-    </div>
+    <div class="clue">6 8 2 : satu angka benar dan posisinya benar<br>7 3 8 : tidak ada angka yang benar<br>6 1 4 : satu angka benar tetapi posisinya salah<br>2 0 6 : dua angka benar tetapi posisinya salah<br>7 8 0 : satu angka benar tetapi posisinya salah</div>
+    <div class="keypad"><input maxlength="1"><input maxlength="1"><input maxlength="1"><br><button onclick="check(this)">Cek</button></div>
   </div>
-  <div class="nav"><button onclick="go(3)">Next</button></div>
+  <div class="nav"><div class="left"><button onclick="go(1)">⏮ Kembali</button></div><div class="center"><button onclick="startCurrentTimer()">▶ Mulai Babak</button></div><div class="right"><button onclick="go(3)">⏭ Lanjut</button></div></div>
 </div>
 
 <!-- PAGE 3 -->
 <div class="page" id="page3">
   <h1>Babak Rebutan 2</h1>
-  <div class="timer" id="timer3">03:00</div>
+  <div class="timer" id="timer3">04:00</div>
   <div class="lock-box" data-code="3841">
     <div class="lock-icon">🔒</div>
     <div class="tries">Sisa kesempatan: <span class="try-count">5</span></div>
-    <div class="clue">
-      9 2 8 5 : satu angka benar tetapi posisinya salah<br>
-      1 9 3 7 : dua angka benar tetapi posisinya salah<br>
-      5 2 0 1 : satu angka benar dan posisinya benar<br>
-      6 5 0 7 : tidak ada angka yang benar<br>
-      8 5 2 4 : dua angka benar tetapi posisinya salah
-    </div>
-    <div class="keypad">
-      <input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"><br>
-      <button onclick="check(this)">Cek</button>
-    </div>
+    <div class="clue">9 2 8 5 : satu angka benar tetapi posisinya salah<br>1 9 3 7 : dua angka benar tetapi posisinya salah<br>5 2 0 1 : satu angka benar dan posisinya benar<br>6 5 0 7 : tidak ada angka yang benar<br>8 5 2 4 : dua angka benar tetapi posisinya salah</div>
+    <div class="keypad"><input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"><br><button onclick="check(this)">Cek</button></div>
   </div>
-  <div class="nav"><button onclick="go(4)">Next</button></div>
+  <div class="nav"><div class="left"><button onclick="go(2)">⏮ Kembali</button></div><div class="center"><button onclick="startCurrentTimer()">▶ Mulai Babak</button></div><div class="right"><button onclick="go(4)">⏭ Lanjut</button></div></div>
 </div>
 
 <!-- PAGE 4 -->
 <div class="page" id="page4">
   <h1>Babak Rebutan 3</h1>
-  <div class="timer" id="timer4">06:00</div>
+  <div class="timer" id="timer4">07:00</div>
   <div class="lock-box" data-code="42617">
     <div class="lock-icon">🔒</div>
     <div class="tries">Sisa kesempatan: <span class="try-count">5</span></div>
-    <div class="clue">
-      7 4 5 3 6 : tiga angka benar tetapi posisinya salah<br>
-      8 5 2 9 1 : dua angka benar tetapi posisinya salah<br>
-      8 9 3 0 5 : tidak ada angka yang benar<br>
-      4 9 0 1 7 : tiga angka benar dan posisinya benar<br>
-      5 0 6 8 9 : satu angka benar dan posisinya benar
-    </div>
-    <div class="keypad">
-      <input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"><br>
-      <button onclick="check(this)">Cek</button>
-    </div>
+    <div class="clue">7 4 5 3 6 : tiga angka benar tetapi posisinya salah<br>8 5 2 9 1 : dua angka benar tetapi posisinya salah<br>8 9 3 0 5 : tidak ada angka yang benar<br>4 9 0 1 7 : tiga angka benar dan posisinya benar<br>5 0 6 8 9 : satu angka benar dan posisinya benar</div>
+    <div class="keypad"><input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"><input maxlength="1"><br><button onclick="check(this)">Cek</button></div>
   </div>
+  <div class="nav"><div class="left"><button onclick="go(3)">⏮ Kembali</button></div><div class="center"><button onclick="startCurrentTimer()">▶ Mulai Babak</button></div><div class="right"></div></div>
 </div>
 
 <script>
-let attempts = new Map();
-let audioUnlocked = false;
-let currentTimer = null;
-
-function startTimer(id, minutes) {
-  if (currentTimer) clearInterval(currentTimer);
-  let time = minutes * 60;
-  const el = document.getElementById(id);
-
-  currentTimer = setInterval(() => {
-    if (time <= 0) {
-      clearInterval(currentTimer);
-      el.textContent = '00:00';
-      document.querySelectorAll('#' + el.closest('.page').id + ' input, #' + el.closest('.page').id + ' button')
-        .forEach(e => e.disabled = true);
-      return;
-    }
-    time--;
-    const m = String(Math.floor(time / 60)).padStart(2, '0');
-    const s = String(time % 60).padStart(2, '0');
-    el.textContent = m + ':' + s;
-  }, 1000);
-}
-
-function unlockAudio() {
-  if (audioUnlocked) return;
-  const a = document.getElementById('successSound');
-  if (!a) return;
-  a.muted = true;
-  a.play().then(() => {
-    a.pause();
-    a.currentTime = 0;
-    a.muted = false;
-    audioUnlocked = true;
-  }).catch(() => {});
-}
-
-function check(btn) {
-  const box = btn.closest('.lock-box');
-  const inputs = box.querySelectorAll('input');
-  const code = String(box.dataset.code);
-
-  let val = '';
-  inputs.forEach(i => val += i.value.trim());
-
-  if (val.length !== code.length) {
-    alert('Isi semua kotak angka');
-    return;
-  }
-
-  const isFinal = box.closest('#page4');
-  const maxTry = isFinal ? 5 : (box.closest('#page3') ? 5 : 3);
-  let used = attempts.get(box) || 0;
-  if (used >= maxTry) return;
-
-  if (val === code) {
-    box.querySelector('.lock-icon').textContent = '🔓';
-    box.querySelector('.lock-icon').classList.add('lock-open');
-    box.querySelector('.keypad')?.remove();
-    box.querySelector('.clue')?.remove();
-    box.querySelector('.tries')?.remove();
-
-    unlockAudio();
-    const snd = document.getElementById('successSound');
-    if (snd) {
-      snd.currentTime = 0;
-      snd.play().catch(() => {});
-    }
-
-    const icons = ['🎉','🎊','✨','💥','🎈'];
-    for (let i = 0; i < 40; i++) {
-      const c = document.createElement('div');
-      c.className = 'confetti';
-      c.textContent = icons[Math.floor(Math.random() * icons.length)];
-      c.style.left = Math.random() * 100 + 'vw';
-      c.style.animationDuration = 2 + Math.random() * 2 + 's';
-      document.body.appendChild(c);
-      setTimeout(() => c.remove(), 4000);
-    }
-    return;
-  }
-
-  attempts.set(box, used + 1);
-  const tc = box.querySelector('.try-count');
-  if (tc) tc.textContent = maxTry - (used + 1);
-
-  if (isFinal) {
-    const codeArr = code.split('');
-    inputs.forEach((inp, idx) => {
-      if (inp.value === '') return;
-      if (inp.value === codeArr[idx]) {
-        inp.style.background = '#c7f5d9';
-        inp.disabled = true;
-      } else {
-        inp.value = '';
-      }
-    });
-  } else {
-    alert('Kode salah');
-  }
-}
-
-function go(n) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page' + n).classList.add('active');
-
-  if (n === 1) startTimer('timer1', 5);
-  if (n === 2) startTimer('timer2', 3);
-  if (n === 3) startTimer('timer3', 3);
-  if (n === 4) startTimer('timer4', 6);
-}
-
-startTimer('timer1', 5);
+let attempts=new Map(),currentTimer=null,currentPage=1,audioUnlocked=false;
+function startTimer(id,m){if(currentTimer)clearInterval(currentTimer);let t=m*60,e=document.getElementById(id);currentTimer=setInterval(()=>{if(t<=0){clearInterval(currentTimer);e.textContent='00:00';document.querySelectorAll('#'+e.closest('.page').id+' input, #'+e.closest('.page').id+' button').forEach(x=>x.disabled=true);return}t--;e.textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')},1e3)}
+function unlockAudio(){if(audioUnlocked)return;const a=document.getElementById('successSound');if(!a)return;a.muted=true;a.play().then(()=>{a.pause();a.currentTime=0;a.muted=false;audioUnlocked=true}).catch(()=>{})}
+function check(b){const box=b.closest('.lock-box'),inputs=box.querySelectorAll('input'),code=String(box.dataset.code);let v='';inputs.forEach(i=>v+=i.value.trim());if(v.length!==code.length)return alert('Isi semua kotak angka');const isFinal=box.closest('#page4'),maxTry=isFinal?5:box.closest('#page3')?5:3;let u=attempts.get(box)||0;if(u>=maxTry)return;if(v===code){box.querySelector('.lock-icon').textContent='🔓';box.querySelector('.lock-icon').classList.add('lock-open');box.querySelector('.keypad')?.remove();box.querySelector('.clue')?.remove();box.querySelector('.tries')?.remove();unlockAudio();const s=document.getElementById('successSound');s&&((s.currentTime=0),s.play().catch(()=>{}));return}attempts.set(box,u+1);const tc=box.querySelector('.try-count');tc&&(tc.textContent=maxTry-(u+1));if(isFinal){const ca=code.split('');inputs.forEach((inp,i)=>{if(inp.value==='')return;inp.value===ca[i]?(inp.style.background='#c7f5d9',inp.disabled=true):inp.value=''})}else alert('Kode salah')}
+function go(n){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page'+n).classList.add('active');currentPage=n}
+function startCurrentTimer(){1===currentPage&&startTimer('timer1',5);2===currentPage&&startTimer('timer2',3);3===currentPage&&startTimer('timer3',4);4===currentPage&&startTimer('timer4',7)}
 </script>
 </body>
 </html>
